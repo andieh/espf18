@@ -1,0 +1,70 @@
+esphome:
+  name: tuergong
+  friendly_name: Türgong
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf   # wird für speaker/media_player Komponenten benötigt
+
+# WLAN-Zugangsdaten liegen in secrets.yaml, nicht direkt hier
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+
+  # Fallback-Hotspot, falls die WLAN-Verbindung mal fehlschlägt
+  ap:
+    ssid: "Tuergong Fallback Hotspot"
+    password: !secret fallback_ap_password
+
+logger:
+  level: INFO
+
+# API-Verbindung zu Home Assistant, verschlüsselt
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# Updates künftig per OTA möglich, kein USB-Kabel mehr nötig
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+# --- Audio ---
+
+i2s_audio:
+  - id: i2s_out
+    i2s_bclk_pin: GPIO26
+    i2s_lrclk_pin: GPIO25
+
+speaker:
+  - platform: i2s_audio
+    id: doorbell_speaker
+    i2s_audio_id: i2s_out
+    i2s_dout_pin: GPIO22
+    dac_type: external
+    buffer_duration: 40ms
+
+# Leichtgewichtiger Testton ohne Audio-Decoder - erzeugt direkt eine Rechteckwelle
+rtttl:
+  speaker: doorbell_speaker
+  id: buzzer
+  gain: 80%
+
+sensor:
+  - platform: wifi_signal
+    name: "WLAN Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: "Laufzeit"
+
+button:
+  - platform: restart
+    name: "Neustart"
+
+  - platform: template
+    name: "Testton abspielen"
+    on_press:
+      - rtttl.play: 'test:d=4,o=5,b=100:c,e,g,c6'
