@@ -13,11 +13,6 @@ wifi:
   password: !secret wifi_password
   power_save_mode: none
 
-  # Fallback-Hotspot, falls die WLAN-Verbindung mal fehlschlägt
-  ap:
-    ssid: "Tuergong Fallback Hotspot"
-    password: !secret fallback_ap_password
-
 logger:
   level: INFO
 
@@ -51,6 +46,17 @@ rtttl:
   speaker: doorbell_speaker
   id: buzzer
   gain: 80%
+
+media_player:
+  - platform: speaker
+    name: "Türgong"
+    id: doorbell_player
+    buffer_size: 16000   # Standard wäre 1.000.000 Byte - viel zu groß ohne PSRAM
+    announcement_pipeline:
+      speaker: doorbell_speaker
+      format: WAV
+
+# --- Diagnose (optional, kann später entfernt werden) ---
 
 sensor:
   - platform: wifi_signal
