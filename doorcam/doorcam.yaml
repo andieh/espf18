@@ -32,22 +32,34 @@ wifi:
 binary_sensor:
   - platform: gpio
     pin: 33
-    name: $friendly_name PIR
+    name: Door Cam PIR
     id: pir_sensor
     device_class: motion
+    on_press:
+      - lambda: |-
+          id(oled_display).turn_on();
+    on_release:
+      - delay: 30s
+      - if:
+          condition:
+            binary_sensor.is_off: pir_sensor
+          then:
+            - lambda: |-
+                id(oled_display).turn_off();
+
   - platform: gpio
     pin:
       number: 34
       #mode: INPUT_PULLUP
       inverted: True
-    name: $friendly_name Button
+    name: Door Cam Button
     on_press:
       - logger.log: "The physical button was pressed!"
     filters:
       - delayed_off: 50ms
 
-
-captive_portal:
+# fallback AP, brauchen wir erst mal nicht
+#captive_portal:
 
 i2c:
   - id: bus_a
@@ -77,25 +89,25 @@ display:
     i2c_id: bus_a
     address: 0x3C
     rotation: 180
-    #
+    id: oled_display
     lambda: |-
-      it.print(0, 0, id(tnr1), "TTGO-Camera!");
-      if (id(pir_sensor).state) {
-        it.printf(64, 32, id(tnr1), TextAlign::CENTER, "Motion Detected!");
-      } else {
-        it.printf(64, 32, id(tnr1), TextAlign::CENTER, "No Motion");
-      }
+       it.print(0, 0, id(tnr2), "Fam. Fuertig");
+       it.print(64, 32, id(tnr1), TextAlign::CENTER, "Komm rin!");
+#      if (id(pir_sensor).state) {
+#        it.printf(64, 32, id(tnr1), TextAlign::CENTER, "Motion Detected!");
+#      } else {
+#        it.printf(64, 32, id(tnr1), TextAlign::CENTER, "No Motion");
+#      }
 
-esp32_camera_web_server:
-  - port: 8080
-    mode: stream
-  - port: 8081
-    mode: snapshot
-
-
+# mal disablen
+#esp32_camera_web_server:
+#  - port: 8080
+#    mode: stream
+#  - port: 8081
+#    mode: snapshot
 
 esp32_camera:
-  name: $friendly_name Camera
+  name: Door Cam Camera
   external_clock:
     pin: 32
     frequency: 20MHz
