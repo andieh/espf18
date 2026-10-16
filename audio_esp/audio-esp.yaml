@@ -69,10 +69,16 @@ media_player:
 sensor:
   - platform: wifi_signal
     name: "WLAN Signal"
-    update_interval: 60s
-
+    update_interval: 30s
   - platform: uptime
     name: "Laufzeit"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+    ssid:
+      name: "SSID"
 
 button:
   - platform: restart

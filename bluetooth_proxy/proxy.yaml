@@ -35,3 +35,17 @@ captive_portal:
 
 bluetooth_proxy:
 
+sensor:
+  - platform: wifi_signal
+    name: "WLAN Signal"
+    update_interval: 30s
+  - platform: uptime
+    name: "Laufzeit"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+    ssid:
+      name: "SSID"
+
