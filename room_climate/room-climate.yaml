@@ -1,0 +1,43 @@
+esphome:
+  name: room-climate         # later e.g. climate-bedroom (only a-z, 0-9, -)
+  friendly_name: Room Climate # display name in Home Assistant
+
+esp32:
+  board: esp32-c3-devkitm-1  # ESP32-C3 Super Mini
+  variant: esp32c3
+  framework:
+    type: esp-idf
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG   # logs via the USB-C port (not the TX/RX pins)
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  output_power: 8.5dB        # known fix for weak/unstable WiFi on the C3 Super Mini
+
+i2c:
+  sda: GPIO4
+  scl: GPIO3
+  scan: true                 # logs whether the sensor is found (0x44)
+
+sensor:
+  - platform: sht4x
+    address: 0x44
+    update_interval: 60s
+    temperature:
+      name: "Temperature"
+    humidity:
+      name: "Humidity"
+
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
