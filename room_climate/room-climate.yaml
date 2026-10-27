@@ -1,6 +1,6 @@
 esphome:
   name: room-climate         # later e.g. climate-bedroom (only a-z, 0-9, -)
-  friendly_name: Room Climate # display name in Home Assistant
+  friendly_name: Room Climate  # display name in Home Assistant
 
 esp32:
   board: esp32-c3-devkitm-1  # ESP32-C3 Super Mini
@@ -41,3 +41,17 @@ sensor:
   - platform: wifi_signal
     name: "WiFi Signal"
     update_interval: 60s
+  - platform: uptime
+    name: "Laufzeit"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+    ssid:
+      name: "SSID"
+
+button:
+  - platform: restart
+    name: "Neustart"
+
