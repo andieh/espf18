@@ -8,6 +8,9 @@ esp32:
     type: esp-idf
 
 logger:
+  logs:
+    servo: INFO
+
 api:
 ota:
   - platform: esphome
@@ -16,10 +19,6 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   output_power: 8.5dB   # bekannter Fix für den schwachen WLAN-Empfang der Super Minis
-  ap:
-    ssid: "Birb Fallback"
-
-captive_portal:
 
 output:
   - platform: ledc
@@ -32,7 +31,7 @@ servo:
     output: servo_pwm
     restore: true          # Position nach Neustart wiederherstellen
     auto_detach_time: 1s   # kein Brummen im Stillstand
-    transition_length: 1s  # langsames, „natürliches“ Umkippen
+    transition_length: 3s  # langsames, „natürliches“ Umkippen
 
 number:
   - platform: template
