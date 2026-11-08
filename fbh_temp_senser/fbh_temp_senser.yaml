@@ -1,0 +1,136 @@
+esphome:
+  name: fbh-temp-senser # generic, moveable
+  friendly_name: FBH Temperature Senser
+
+esp8266:
+  board: d1_mini
+
+logger:
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  #output_power: 8.5dB        # known fix for weak/unstable WiFi on the C3 Super Mini
+
+one_wire:
+  - platform: gpio
+    pin: D2
+
+# Offsets: Wasserabgleich 06.11.2026 bei ca. 23 °C (alle Fühler im selben Wasser,
+# Abweichung zum Mittel aller 12, über 30 min stabil auf ±0,02 K)
+sensor:
+  # --- Vorlauf (Zulauf zum Verteiler)
+  - platform: dallas_temp
+    address: 0x9200000048961028
+    name: "Vorlauf"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.05
+
+  # --- Rücklauf je Heizkreis (Rohr direkt vor dem Rücklaufbalken)
+  - platform: dallas_temp
+    address: 0x330000006e22f828
+    name: "Rücklauf HK 1"        # Eingangsbereich + Gäste-WC
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.03
+  - platform: dallas_temp
+    address: 0x8500000048fb9028
+    name: "Rücklauf HK 2"        # Schlafzimmer Garten
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.17
+  - platform: dallas_temp
+    address: 0xc40000004932f428
+    name: "Rücklauf HK 3"        # Schlafzimmer Terrasse
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.06
+  - platform: dallas_temp
+    address: 0xd400000071220928
+    name: "Rücklauf HK 4"        # Kinderzimmer
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.22
+  - platform: dallas_temp
+    address: 0x1900000071be1928
+    name: "Rücklauf HK 5"        # Büro
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.16
+  - platform: dallas_temp
+    address: 0xbd00000048e11e28
+    name: "Rücklauf HK 6"        # Wohnzimmer Büroseite (Terrasse)
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.50
+  - platform: dallas_temp
+    address: 0xda00000049313e28
+    name: "Rücklauf HK 7"        # Wohnzimmer Hang
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.11
+  - platform: dallas_temp
+    address: 0xda00000048150928
+    name: "Rücklauf HK 8"        # Küche Essbereich
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.27
+  - platform: dallas_temp
+    address: 0x6f0000004a8a2d28
+    name: "Rücklauf HK 9"        # Küche Garten
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.13
+  - platform: dallas_temp
+    address: 0x010000004937dc28
+    name: "Rücklauf HK 10"       # Bad
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.10
+
+  # --- Rücklauf gesamt (gemeinsame Rückleitung zum Kessel)
+  - platform: dallas_temp
+    address: 0x38000000711af628
+    name: "Rücklauf gesamt"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.30
+
+  # --- other stuff
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+  - platform: uptime
+    name: "Laufzeit"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+    ssid:
+      name: "SSID"
+
+button:
+  - platform: restart
+    name: "Neustart"
