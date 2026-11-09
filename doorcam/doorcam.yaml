@@ -91,7 +91,7 @@ display:
     rotation: 180
     id: oled_display
     lambda: |-
-       it.print(0, 0, id(tnr2), "Fam. Fuertig");
+       it.print(0, 0, id(tnr2), "Willkommen");
        it.print(64, 32, id(tnr1), TextAlign::CENTER, "Komm rin!");
 #      if (id(pir_sensor).state) {
 #        it.printf(64, 32, id(tnr1), TextAlign::CENTER, "Motion Detected!");
