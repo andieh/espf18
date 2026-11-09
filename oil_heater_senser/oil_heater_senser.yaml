@@ -24,10 +24,10 @@ one_wire:
   - platform: gpio
     pin: D2
 
-# Offsets: Wasserabgleich 08.11.2026 bei ca. 22,5 und 18 °C (alle 7 Fühler im
-# selben Wasser, Abweichung zum Mittel aller 7, beide Stufen auf ±0,01 K gleich)
+# Offsets: water calibration 2026-11-08 at approx. 22.5 and 18 °C (all 7 probes in
+# the same water, deviation from the average of all 7, both stages equal within ±0.01 K)
 sensor:
-  # VLB
+  # supply, burner (VLB)
   - platform: dallas_temp
     address: 0xf500000048a74028
     name: "Vorlauf Brenner"
@@ -35,7 +35,7 @@ sensor:
     update_interval: 30s
     filters:
       - offset: 0.09
-  # RLB
+  # return, burner (RLB)
   - platform: dallas_temp
     address: 0x8500000048399828
     name: "Rücklauf Brenner"
@@ -43,7 +43,7 @@ sensor:
     update_interval: 30s
     filters:
       - offset: -0.12
-  # VLO
+  # supply, upper floor (VLO)
   - platform: dallas_temp
     address: 0xee000000487a0428
     name: "Vorlauf OG"
@@ -51,7 +51,7 @@ sensor:
     update_interval: 30s
     filters:
       - offset: 0.05
-  # RLO
+  # return, upper floor (RLO)
   - platform: dallas_temp
     address: 0xdb00000048216a28
     name: "Rücklauf OG"
@@ -59,7 +59,7 @@ sensor:
     update_interval: 30s
     filters:
       - offset: 0.01
-  # VLK
+  # supply, basement (VLK)
   - platform: dallas_temp
     address: 0x7e000000481e4128
     name: "Vorlauf KG"
@@ -67,7 +67,7 @@ sensor:
     update_interval: 30s
     filters:
       - offset: 0.02
-  # RLK
+  # return, basement (RLK)
   - platform: dallas_temp
     address: 0xb800000048954d28
     name: "Rücklauf KG"
@@ -75,7 +75,7 @@ sensor:
     update_interval: 30s
     filters:
       - offset: -0.09
-  # ABG
+  # exhaust gas, rough (ABG)
   - platform: dallas_temp
     address: 0xdf00000048379328
     name: "Abgas grob"

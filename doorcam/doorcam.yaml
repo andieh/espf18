@@ -13,7 +13,7 @@ psram:
 
 logger:
     
-# API-Verbindung zu Home Assistant, verschlüsselt
+# API connection to Home Assistant, encrypted
 api:
   encryption:
     key: !secret api_encryption_key
@@ -58,7 +58,7 @@ binary_sensor:
     filters:
       - delayed_off: 50ms
 
-# fallback AP, brauchen wir erst mal nicht
+# fallback AP, don't need it for now
 #captive_portal:
 
 i2c:
@@ -99,7 +99,7 @@ display:
 #        it.printf(64, 32, id(tnr1), TextAlign::CENTER, "No Motion");
 #      }
 
-# mal disablen
+# disabled for now
 #esp32_camera_web_server:
 #  - port: 8080
 #    mode: stream

@@ -1,17 +1,17 @@
-# Atom Lite – IR-Fernbedienung für JBL Bar 5.0 (Wohnzimmer KG)
-# Sender:    GPIO26 (Grove) – IR Unit jetzt, später SFH415 mit BC547
-#            Alternative: eingebaute IR-Diode → ir_tx_pin auf GPIO12 ändern
-# Empfänger: GPIO32 (Grove, IR Unit) – bleibt drin zum späteren Anlernen
-# Codes: Pronto-Rohdaten aus dem Anlern-Log, jeweils Hauptsignal + Wiederholung
+# Atom Lite - IR remote control for JBL Bar 5.0 (basement living room)
+# Transmitter: GPIO26 (Grove) - IR unit for now, later SFH415 with BC547
+#              Alternative: built-in IR LED -> change ir_tx_pin to GPIO12
+# Receiver:    GPIO32 (Grove, IR unit) - stays in place for later learning
+# Codes: Pronto raw data from the learning log, each with main signal + repeat
 
 substitutions:
-  ir_tx_pin: GPIO26   # IR Unit / später SFH415; eingebaute Diode: GPIO12
+  ir_tx_pin: GPIO26   # IR unit / later SFH415; built-in LED: GPIO12
   ir_rx_pin: GPIO32
   pronto_repeat: "0000 006D 0002 0000 0159 0056 0015 0181"
 
 esphome:
   name: m5stack-atom-lite
-  name_add_mac_suffix: true   # ergibt m5stack-atom-lite-xxxxxx
+  name_add_mac_suffix: true   # results in m5stack-atom-lite-xxxxxx
   friendly_name: Soundbar IR
 
 esp32:
@@ -30,7 +30,7 @@ ota:
 wifi:
   ssid: !secret wifi_ssid            # bane_iot
   password: !secret wifi_password
-  # keine feste IP – kommt über die DHCP-Reservierung (10.0.80.42)
+  # no static IP - comes via the DHCP reservation (10.0.80.42)
 
 remote_transmitter:
   pin: ${ir_tx_pin}
@@ -43,7 +43,7 @@ remote_receiver:
     mode:
       input: true
       pullup: true
-  dump: nec   # zeigt auch das eigene Sendesignal, falls es zurückgestreut wird
+  dump: nec   # also shows our own transmitted signal, in case it gets reflected back
 
 button:
   - platform: template

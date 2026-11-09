@@ -5,9 +5,9 @@ esphome:
 esp32:
   board: esp32dev
   framework:
-    type: esp-idf   # wird für speaker/media_player Komponenten benötigt
+    type: esp-idf   # required for speaker/media_player components
 
-# WLAN-Zugangsdaten liegen in secrets.yaml, nicht direkt hier
+# Wi-Fi credentials live in secrets.yaml, not directly here
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -16,12 +16,12 @@ wifi:
 logger:
   level: INFO
 
-# API-Verbindung zu Home Assistant, verschlüsselt
+# API connection to Home Assistant, encrypted
 api:
   encryption:
     key: !secret api_encryption_key
 
-# Updates künftig per OTA möglich, kein USB-Kabel mehr nötig
+# Future updates via OTA, no USB cable needed anymore
 ota:
   - platform: esphome
     password: !secret ota_password
@@ -51,12 +51,12 @@ media_player:
   - platform: speaker
     name: "Türgong"
     id: doorbell_player
-    buffer_size: 16000   # Standard wäre 1.000.000 Byte - viel zu groß ohne PSRAM
+    buffer_size: 16000   # default would be 1,000,000 bytes - far too large without PSRAM
     announcement_pipeline:
       speaker: doorbell_speaker
       format: WAV
 
-# --- Diagnose (optional, kann später entfernt werden) ---
+# --- Diagnostics (optional, can be removed later) ---
 
 sensor:
   - platform: wifi_signal

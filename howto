@@ -1,6 +1,0 @@
-build and everything
-change in the folder and run:
-docker run --rm -it   -v "${PWD}":/config   --device=/dev/ttyUSB0   ghcr.io/esphome/esphome:latest   run tuergong.yamla
-
-show logs:
-docker run --rm -it   -v "${PWD}":/config   --device=/dev/ttyUSB0   ghcr.io/esphome/esphome:latest   logs tuergong.yaml --device /dev/ttyUSB0

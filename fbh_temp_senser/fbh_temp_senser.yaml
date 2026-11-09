@@ -24,10 +24,10 @@ one_wire:
   - platform: gpio
     pin: D2
 
-# Offsets: Wasserabgleich 06.11.2026 bei ca. 23 °C (alle Fühler im selben Wasser,
-# Abweichung zum Mittel aller 12, über 30 min stabil auf ±0,02 K)
+# Offsets: water calibration 2026-11-06 at approx. 23 °C (all probes in the same water,
+# deviation from the average of all 12, stable within ±0.02 K over 30 min)
 sensor:
-  # --- Vorlauf (Zulauf zum Verteiler)
+  # --- Supply (feed to the manifold)
   - platform: dallas_temp
     address: 0x9200000048961028
     name: "Vorlauf"
@@ -36,79 +36,79 @@ sensor:
     filters:
       - offset: 0.05
 
-  # --- Rücklauf je Heizkreis (Rohr direkt vor dem Rücklaufbalken)
+  # --- Return per heating circuit (pipe directly before the return manifold)
   - platform: dallas_temp
     address: 0x330000006e22f828
-    name: "Rücklauf HK 1"        # Eingangsbereich + Gäste-WC
+    name: "Rücklauf HK 1"        # entrance area + guest toilet
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.03
   - platform: dallas_temp
     address: 0x8500000048fb9028
-    name: "Rücklauf HK 2"        # Schlafzimmer Garten
+    name: "Rücklauf HK 2"        # bedroom, garden side
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.17
   - platform: dallas_temp
     address: 0xc40000004932f428
-    name: "Rücklauf HK 3"        # Schlafzimmer Terrasse
+    name: "Rücklauf HK 3"        # bedroom, terrace side
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.06
   - platform: dallas_temp
     address: 0xd400000071220928
-    name: "Rücklauf HK 4"        # Kinderzimmer
+    name: "Rücklauf HK 4"        # children's room
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.22
   - platform: dallas_temp
     address: 0x1900000071be1928
-    name: "Rücklauf HK 5"        # Büro
+    name: "Rücklauf HK 5"        # office
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.16
   - platform: dallas_temp
     address: 0xbd00000048e11e28
-    name: "Rücklauf HK 6"        # Wohnzimmer Büroseite (Terrasse)
+    name: "Rücklauf HK 6"        # living room, office side (terrace)
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.50
   - platform: dallas_temp
     address: 0xda00000049313e28
-    name: "Rücklauf HK 7"        # Wohnzimmer Hang
+    name: "Rücklauf HK 7"        # living room, slope side
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.11
   - platform: dallas_temp
     address: 0xda00000048150928
-    name: "Rücklauf HK 8"        # Küche Essbereich
+    name: "Rücklauf HK 8"        # kitchen, dining area
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.27
   - platform: dallas_temp
     address: 0x6f0000004a8a2d28
-    name: "Rücklauf HK 9"        # Küche Garten
+    name: "Rücklauf HK 9"        # kitchen, garden side
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.13
   - platform: dallas_temp
     address: 0x010000004937dc28
-    name: "Rücklauf HK 10"       # Bad
+    name: "Rücklauf HK 10"       # bathroom
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.10
 
-  # --- Rücklauf gesamt (gemeinsame Rückleitung zum Kessel)
+  # --- Combined return (shared return line to the boiler)
   - platform: dallas_temp
     address: 0x38000000711af628
     name: "Rücklauf gesamt"

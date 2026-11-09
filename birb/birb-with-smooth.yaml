@@ -1,0 +1,75 @@
+esphome:
+  name: birb
+  friendly_name: Birb
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+  logs:
+    servo: INFO
+
+api:
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  output_power: 8.5dB   # known fix for the weak Wi-Fi reception of the Super Minis
+
+captive_portal:
+
+output:
+  - platform: ledc
+    id: servo_pwm
+    pin: GPIO4
+    frequency: 50 Hz
+
+globals:
+  - id: current_pos
+    type: float
+    restore_value: true
+    initial_value: '0.0'
+  - id: start_pos
+    type: float
+    initial_value: '0.0'
+
+servo:
+  - id: birb_servo
+    output: servo_pwm
+    auto_detach_time: 1s
+    transition_length: 0s   # motion is handled by the script
+
+script:
+  - id: move_smooth
+    mode: restart           # a new command cleanly interrupts an ongoing move
+    parameters:
+      target: float
+    then:
+      - lambda: 'id(start_pos) = id(current_pos);'
+      - repeat:
+          count: 100          # 100 steps × 20 ms = 2 s travel time
+          then:
+            - lambda: |-
+                float t = (iteration + 1) / 100.0;
+                float e = 0.5 - 0.5 * cos(t * M_PI);   // Ease-in-out
+                float pos = id(start_pos) + (target - id(start_pos)) * e;
+                id(current_pos) = pos;
+                id(birb_servo).write(pos);
+            - delay: 20ms
+
+number:
+  - platform: template
+    name: "Position"
+    min_value: -100
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    set_action:
+      - script.execute:
+          id: move_smooth
+          target: !lambda 'return x / 100.0;'

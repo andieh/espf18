@@ -1,0 +1,2 @@
+# shared build/toolchain cache when running esphome from the repo root
+/.esphome/

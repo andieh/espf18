@@ -6,13 +6,13 @@ esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   framework:
-    type: esp-idf   # wird für speaker/media_player Komponenten benötigt
+    type: esp-idf   # required for speaker/media_player components
 
-# Das YB-ESP32-S3-AMP (N8R2) hat 2MB PSRAM im QUAD-Modus (nicht octal - das wäre nur bei -R8-Varianten der Fall)
+# The YB-ESP32-S3-AMP (N8R2) has 2MB PSRAM in QUAD mode (not octal - that would only apply to -R8 variants)
 psram:
   mode: quad
 
-# WLAN-Zugangsdaten liegen in secrets.yaml, nicht direkt hier
+# Wi-Fi credentials live in secrets.yaml, not directly here
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -20,21 +20,21 @@ wifi:
 
 logger:
   level: INFO
-  hardware_uart: UART0   # über UART0 -> CH343 statt über den nativen USB-Port, der bei jedem Reset kurz abreißt
+  hardware_uart: UART0   # via UART0 -> CH343 instead of the native USB port, which briefly drops on every reset
 
-# API-Verbindung zu Home Assistant, verschlüsselt
+# API connection to Home Assistant, encrypted
 api:
   encryption:
     key: !secret api_encryption_key
 
-# Updates künftig per OTA möglich, kein USB-Kabel mehr nötig
+# Future updates via OTA, no USB cable needed anymore
 ota:
   - platform: esphome
     password: !secret ota_password
 
 # --- Audio ---
-# Auf dem YB-ESP32-S3-AMP sind die I2S-Pins zu den beiden onboard MAX98357A fest verdrahtet
-# (GPIO5/6/7 sind laut Hersteller ausschließlich dafür reserviert, nicht frei belegbar)
+# On the YB-ESP32-S3-AMP, the I2S pins are hardwired to the two onboard MAX98357A
+# (per the manufacturer, GPIO5/6/7 are reserved exclusively for this, not freely assignable)
 
 i2s_audio:
   - id: i2s_out
@@ -49,7 +49,7 @@ speaker:
     dac_type: external
     buffer_duration: 40ms
 
-# Leichtgewichtiger Testton ohne Audio-Decoder - erzeugt direkt eine Rechteckwelle
+# Lightweight test tone without an audio decoder - generates a square wave directly
 rtttl:
   speaker: doorbell_speaker
   id: buzzer
@@ -59,12 +59,12 @@ media_player:
   - platform: speaker
     name: "Türgong"
     id: doorbell_player
-    buffer_size: 16000   # Standard wäre 1.000.000 Byte - viel zu groß ohne PSRAM, jetzt mit PSRAM eigentlich nicht mehr nötig so klein zu halten
+    buffer_size: 16000   # default would be 1,000,000 bytes - far too large without PSRAM; with PSRAM now in place, no longer really necessary to keep it this small
     announcement_pipeline:
       speaker: doorbell_speaker
       format: WAV
 
-# --- Diagnose (optional, kann später entfernt werden) ---
+# --- Diagnostics (optional, can be removed later) ---
 
 sensor:
   - platform: wifi_signal
