@@ -27,7 +27,7 @@ wifi:
   password: !secret wifi_password
   ap:
     ssid: "TTGO-Camera Fallback"
-    password: "changeme123"
+    password: !secret fallback_ap_password
 
 binary_sensor:
   - platform: gpio

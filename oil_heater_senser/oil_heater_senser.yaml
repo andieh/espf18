@@ -1,0 +1,103 @@
+esphome:
+  name: oil-heater-senser # generic, moveable
+  friendly_name: Oil Heater Temperature Senser
+
+esp8266:
+  board: d1_mini
+
+logger:
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  #output_power: 8.5dB        # known fix for weak/unstable WiFi on the C3 Super Mini
+
+one_wire:
+  - platform: gpio
+    pin: D2
+
+# Offsets: Wasserabgleich 08.11.2026 bei ca. 22,5 und 18 °C (alle 7 Fühler im
+# selben Wasser, Abweichung zum Mittel aller 7, beide Stufen auf ±0,01 K gleich)
+sensor:
+  # VLB
+  - platform: dallas_temp
+    address: 0xf500000048a74028
+    name: "Vorlauf Brenner"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.09
+  # RLB
+  - platform: dallas_temp
+    address: 0x8500000048399828
+    name: "Rücklauf Brenner"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.12
+  # VLO
+  - platform: dallas_temp
+    address: 0xee000000487a0428
+    name: "Vorlauf OG"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.05
+  # RLO
+  - platform: dallas_temp
+    address: 0xdb00000048216a28
+    name: "Rücklauf OG"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.01
+  # VLK
+  - platform: dallas_temp
+    address: 0x7e000000481e4128
+    name: "Vorlauf KG"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: 0.02
+  # RLK
+  - platform: dallas_temp
+    address: 0xb800000048954d28
+    name: "Rücklauf KG"
+    resolution: 12
+    update_interval: 30s
+    filters:
+      - offset: -0.09
+  # ABG
+  - platform: dallas_temp
+    address: 0xdf00000048379328
+    name: "Abgas grob"
+    resolution: 12
+    update_interval: 10s
+    filters:
+      - offset: 0.04
+
+  # --- other stuff
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+  - platform: uptime
+    name: "Laufzeit"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+    ssid:
+      name: "SSID"
+
+button:
+  - platform: restart
+    name: "Neustart"
