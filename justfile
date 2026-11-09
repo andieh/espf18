@@ -28,11 +28,11 @@ update device:
     docker run --rm -v "$(pwd)":/config --network host \
         {{image}}:{{version}} run {{device}} --device OTA
 
-# update all devices marked "active" in devices.status via OTA
+# update all devices listed in devices.status via OTA
 update-active:
     #!/usr/bin/env bash
     set -euo pipefail
-    grep -E '^active[[:space:]]' {{status_file}} | awk '{print $2}' | while read -r cfg; do
+    grep -vE '^[[:space:]]*(#|$)' {{status_file}} | while read -r cfg; do
         echo "=== Update: $cfg ==="
         docker run --rm -v "$(pwd)":/config --network host {{image}}:{{version}} run "$cfg" --device OTA
     done

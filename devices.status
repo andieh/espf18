@@ -1,23 +1,10 @@
-# Status list for "just update-active".
-# Format: <status> <path-to-yaml>   (whitespace-separated, # = comment)
-# status is "active" or "testing" - please review and adjust once!
-#
-# active  -> running in production, updated by "just update-active" via OTA
-# testing -> NOT updated automatically, only on purpose via "just update <path>"
+# Active devices for "just update-active" - one path per line.
+# Anything NOT listed here is implicitly "testing": not updated
+# automatically, only on purpose via "just update <path>".
 
-active   audio_esp/audio-esp.yaml
-active   bluetooth_proxy/proxy.yaml
-active   doorcam/doorcam.yaml
-active   fbh_temp_senser/fbh_temp_senser.yaml
-active   m5stack-atom-lite-ir/m5stack-atom-lite-ir.yaml
-active   oil_heater_senser/oil_heater_senser.yaml
-active   room_climate/room-climate-1.yaml
-active   room_climate/room-climate-bathroom.yaml
-active   tuergong/tuergong.yaml
-
-# currently actually flashed is still birb.yaml (without smooth movement)
-active   birb/birb.yaml
-
-# not yet committed/flashed, or a pure testing playground
-testing  birb/birb-with-smooth.yaml
-testing  iot_test/iot-test.yaml
+audio_esp/audio-esp.yaml
+bluetooth_proxy/proxy.yaml
+temp_senser/fbh_temp_senser.yaml
+temp_senser/oil_heater_senser.yaml
+room_climate/room-climate-1.yaml
+room_climate/room-climate-bathroom.yaml
