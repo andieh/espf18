@@ -39,70 +39,70 @@ sensor:
   # --- Return per heating circuit (pipe directly before the return manifold)
   - platform: dallas_temp
     address: 0x330000006e22f828
-    name: "Rücklauf HK 1"        # entrance area + guest toilet
+    name: "Rücklauf HK 1"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.03
   - platform: dallas_temp
     address: 0x8500000048fb9028
-    name: "Rücklauf HK 2"        # bedroom, garden side
+    name: "Rücklauf HK 2"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.17
   - platform: dallas_temp
     address: 0xc40000004932f428
-    name: "Rücklauf HK 3"        # bedroom, terrace side
+    name: "Rücklauf HK 3"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.06
   - platform: dallas_temp
     address: 0xd400000071220928
-    name: "Rücklauf HK 4"        # children's room
+    name: "Rücklauf HK 4"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.22
   - platform: dallas_temp
     address: 0x1900000071be1928
-    name: "Rücklauf HK 5"        # office
+    name: "Rücklauf HK 5"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.16
   - platform: dallas_temp
     address: 0xbd00000048e11e28
-    name: "Rücklauf HK 6"        # living room, office side (terrace)
+    name: "Rücklauf HK 6"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.50
   - platform: dallas_temp
     address: 0xda00000049313e28
-    name: "Rücklauf HK 7"        # living room, slope side
+    name: "Rücklauf HK 7"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.11
   - platform: dallas_temp
     address: 0xda00000048150928
-    name: "Rücklauf HK 8"        # kitchen, dining area
+    name: "Rücklauf HK 8"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: 0.27
   - platform: dallas_temp
     address: 0x6f0000004a8a2d28
-    name: "Rücklauf HK 9"        # kitchen, garden side
+    name: "Rücklauf HK 9"
     resolution: 12
     update_interval: 30s
     filters:
       - offset: -0.13
   - platform: dallas_temp
     address: 0x010000004937dc28
-    name: "Rücklauf HK 10"       # bathroom
+    name: "Rücklauf HK 10"
     resolution: 12
     update_interval: 30s
     filters:
