@@ -2,7 +2,7 @@
 
 ESPHome configuration that receives a **Sensus iPERL** water meter over Wireless M-Bus (868 MHz) with a **LilyGO T3 LoRa32 V1.6.1**, decrypts it directly on the ESP32, and delivers the meter reading to Home Assistant.
 
-Status: **working**. Meter reading, decryption, and the Home Assistant integration are running. Still open is a correct display of radio signal strength (see [Known Issues](#known-issues)). The AES key must be requested from the utility beforehand.
+Status: **working**. Meter reading, decryption, signal strength (RSSI), and the Home Assistant integration are running. The AES key must be requested from the utility beforehand.
 
 ---
 
@@ -76,7 +76,7 @@ doesn't depend on `iperl_frame_id` at all.
 |---|---|
 | **Stand** (Reading) | Meter reading in m³ (`device_class: water`, `total_increasing`), suitable for the Energy dashboard |
 | Max. Durchfluss (Max. Flow) | Flow rate from the meter in m³/h. Marked as an instantaneous value in the telegram; with one telegram per hour this is just a single sample |
-| Funksignal (Signal) | Signal strength per the component - **currently unusable**, see Known Issues |
+| Funksignal (Signal) | Signal strength (RSSI) of the last meter telegram in dBm |
 | Telegramme gesamt (Total Telegrams) | All wM-Bus telegrams received since boot (including other devices) |
 | Telegramme vom Zähler (Telegrams From Meter) | Of those, from our own meter |
 | Nicht entschlüsselt (Not Decoded) | Meter telegrams without a decoded value (hints at a wrong key) |
@@ -108,7 +108,7 @@ OK
 |---|---|
 | 1 | Last decoded meter reading |
 | 2 | Meter telegrams / of those decoded |
-| 3 | Age and RSSI of the last meter telegram (RSSI currently unusable) |
+| 3 | Age and RSSI of the last meter telegram |
 | 4 | All telegrams and age of the last one |
 | 5 | Status: `warte auf Funk` (waiting for radio), `Funk OK, warte` (radio OK, waiting), `OK`, `FEHLER Entschl.` (decode error) |
 
