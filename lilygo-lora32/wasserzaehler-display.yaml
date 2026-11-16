@@ -1,0 +1,110 @@
+# OLED-Anzeige fuer wasserzaehler.yaml (LilyGO T3 V1.6.1, SSD1306 128x64)
+#
+# Wird ueber "packages:" eingebunden. Zur Laufzeit ein-/ausschaltbar ueber
+# den Schalter "Display" in Home Assistant oder den BOOT-Knopf am Board.
+# Ist das Display aus, wird nichts ueber I2C uebertragen.
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  frequency: 400kHz        # kurze Uebertragung = weniger Stoerung des Funkchips
+
+font:
+  - file: "gfonts://Roboto Mono"
+    id: f_small
+    size: 10
+  - file: "gfonts://Roboto Mono@700"
+    id: f_big
+    size: 15
+
+display:
+  - platform: ssd1306_i2c
+    id: oled
+    model: "SSD1306 128x64"
+    address: 0x3C
+    update_interval: never   # wird nur ueber das interval unten aktualisiert
+    lambda: |-
+      uint32_t now = millis();
+      uint32_t frames = id(g_frames);
+      uint32_t mf = id(g_meter_frames);
+      uint32_t dec = id(g_decoded);
+      uint32_t fail = mf > dec ? mf - dec : 0;
+
+      // Zeile 1: Zaehlerstand
+      if (std::isnan(id(g_last_value))) {
+        it.print(0, 0, id(f_big), "Stand ---");
+      } else {
+        it.printf(0, 0, id(f_big), "%.3f m3", id(g_last_value));
+      }
+
+      // Zeile 2: Telegramme vom Zaehler / davon entschluesselt
+      it.printf(0, 19, id(f_small), "Zaehler %u  ok %u", (unsigned) mf, (unsigned) dec);
+
+      // Zeile 3: letztes Zaehler-Telegramm
+      if (mf > 0) {
+        unsigned age = (now - id(g_last_meter_ms)) / 1000;
+        it.printf(0, 30, id(f_small), "vor %us  %d dBm", age, id(g_last_meter_rssi));
+      } else {
+        it.print(0, 30, id(f_small), "noch kein Zaehler");
+      }
+
+      // Zeile 4: alle Telegramme (auch Nachbargeraete)
+      if (frames > 0) {
+        unsigned age = (now - id(g_last_frame_ms)) / 1000;
+        it.printf(0, 41, id(f_small), "Alle %u  vor %us", (unsigned) frames, age);
+      } else {
+        it.print(0, 41, id(f_small), "Alle 0");
+      }
+
+      // Zeile 5: Status
+      const char *status;
+      if (mf == 0) {
+        status = frames ? "Funk OK, warte" : "warte auf Funk";
+      } else if (id(g_last_meter_ms) > id(g_last_decode_ms) &&
+                 now - id(g_last_meter_ms) > 3000) {
+        status = "FEHLER Entschl.";   // Zaehler-Telegramm ohne Wert
+      } else {
+        status = "OK";
+      }
+      if (fail > 0 && strcmp(status, "OK") == 0) {
+        it.printf(0, 52, id(f_small), "OK (%u Fehler)", (unsigned) fail);
+      } else {
+        it.print(0, 52, id(f_small), status);
+      }
+
+switch:
+  - platform: template
+    name: "Display"
+    id: display_on
+    icon: mdi:monitor
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    turn_on_action:
+      - lambda: id(oled).turn_on();
+      - component.update: oled
+    turn_off_action:
+      - lambda: id(oled).turn_off();
+
+# BOOT-Knopf am Board schaltet das Display um
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "Display-Taste"
+    internal: true
+    on_press:
+      - switch.toggle: display_on
+
+interval:
+  - interval: 5s
+    then:
+      - if:
+          condition:
+            switch.is_on: display_on
+          then:
+            - component.update: oled

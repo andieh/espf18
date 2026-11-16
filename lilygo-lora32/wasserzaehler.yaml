@@ -1,0 +1,181 @@
+# Wasserzaehler Sensus iPERL per wM-Bus -> Home Assistant
+# LilyGO T3 LoRa32 V1.6.1 (SX1276, 868 MHz)
+#
+# In secrets.yaml eintragen:
+#   iperl_key: "..."          # 32 Hex-Zeichen vom Versorger
+#   iperl_meter_id: 0x...     # Zaehler-ID, siehe Typenschild/Funktelegramm
+#   iperl_frame_id: "..."     # dieselbe ID, Hersteller-Praefix + byteweise gedreht
+#
+# Display: liegt in wasserzaehler-display.yaml (gleicher Ordner).
+# Zum Weglassen beim Kompilieren die Zeile unter "packages:" auskommentieren.
+
+substitutions:
+  # Zaehler-ID so, wie sie im Funktelegramm steht (Hersteller Sensus "ae4c"
+  # + ID byteweise gedreht). Dient nur zum Zaehlen der Zaehler-Telegramme.
+  # Wert liegt in secrets.yaml (iperl_frame_id).
+  meter_frame_id: !secret iperl_frame_id
+
+packages:
+  display: !include wasserzaehler-display.yaml
+
+esphome:
+  name: wasserzaehler
+  friendly_name: Wasserzähler
+
+esp32:
+  board: ttgo-lora32-v21
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+  logs:
+    wmbus: ERROR
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+external_components:
+  - source: github://SzczepanLeon/esphome-components@main
+    components: [wmbus_common, wmbus_radio, wmbus_meter]
+    refresh: 0s
+
+spi:
+  clk_pin: GPIO5
+  mosi_pin: GPIO27
+  miso_pin: GPIO19
+
+# Zaehler fuer Empfangsstatistik (fuer Display und Home Assistant)
+globals:
+  - id: g_frames            # alle empfangenen wM-Bus-Telegramme
+    type: uint32_t
+    initial_value: "0"
+  - id: g_meter_frames      # davon vom eigenen Zaehler
+    type: uint32_t
+    initial_value: "0"
+  - id: g_decoded           # erfolgreich entschluesselt und ausgewertet
+    type: uint32_t
+    initial_value: "0"
+  - id: g_last_frame_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: g_last_meter_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: g_last_decode_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: g_last_meter_rssi
+    type: int
+    initial_value: "0"
+  - id: g_last_value
+    type: float
+    initial_value: "NAN"
+
+wmbus_common:
+  # "all" stuerzt mit ESPHome 2026.10 beim Start ab (Treiber qwater)
+  drivers: [iperl]
+
+wmbus_radio:
+  radio_type: SX1276
+  cs_pin: GPIO18
+  reset_pin: GPIO23
+  irq_pin: GPIO33        # DIO1
+  on_frame:
+    - then:
+        - lambda: |-
+            id(g_frames)++;
+            id(g_last_frame_ms) = millis();
+            std::string hex = frame->as_hex();
+            if (hex.find("${meter_frame_id}") != std::string::npos) {
+              id(g_meter_frames)++;
+              id(g_last_meter_ms) = millis();
+              id(g_last_meter_rssi) = frame->rssi();
+              ESP_LOGI("wasser", "Telegramm vom Zaehler, RSSI %d dBm", frame->rssi());
+            }
+        - logger.log:
+            level: DEBUG
+            format: "RSSI %d dBm  Telegramm: %s"
+            args: ["frame->rssi()", "frame->as_hex().c_str()"]
+
+wmbus_meter:
+  - id: wasserzaehler
+    meter_id: !secret iperl_meter_id
+    type: iperl
+    key: !secret iperl_key
+
+sensor:
+  - platform: wmbus_meter
+    parent_id: wasserzaehler
+    field: total_m3
+    name: "Stand"
+    unit_of_measurement: "m³"
+    device_class: water
+    state_class: total_increasing
+    accuracy_decimals: 3
+    on_value:
+      - lambda: |-
+          id(g_decoded)++;
+          id(g_last_decode_ms) = millis();
+          id(g_last_value) = x;
+  - platform: wmbus_meter
+    parent_id: wasserzaehler
+    field: max_flow_m3h
+    name: "Max. Durchfluss"
+    unit_of_measurement: "m³/h"
+    state_class: measurement
+    accuracy_decimals: 3
+  - platform: wmbus_meter
+    parent_id: wasserzaehler
+    field: rssi_dbm
+    name: "Funksignal"
+    unit_of_measurement: "dBm"
+    device_class: signal_strength
+    state_class: measurement
+
+  # Empfangsstatistik
+  - platform: template
+    name: "Telegramme gesamt"
+    entity_category: diagnostic
+    state_class: total_increasing
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: return id(g_frames);
+  - platform: template
+    name: "Telegramme vom Zähler"
+    entity_category: diagnostic
+    state_class: total_increasing
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: return id(g_meter_frames);
+  - platform: template
+    name: "Nicht entschlüsselt"
+    entity_category: diagnostic
+    state_class: measurement
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: |-
+      uint32_t m = id(g_meter_frames), d = id(g_decoded);
+      return m > d ? m - d : 0;
+
+  - platform: wifi_signal
+    name: "WLAN Signal"
+    update_interval: 30s
+  - platform: uptime
+    name: "Laufzeit"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+    ssid:
+      name: "SSID"
+

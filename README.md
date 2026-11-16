@@ -43,6 +43,7 @@ listed there is implicitly "testing" - it only gets touched explicitly via
 | [`birb`](birb/README.md) | ESP32-C3 servo toy display room climate, based on [birb the birdi](https://www.printables.com/model/450447-birb-the-birdie-shaped-air-quality-sensor) |
 | [`bluetooth_proxy`](bluetooth_proxy/README.md) | ESP32 BLE proxy on ATOM Lite |
 | [`doorcam`](doorcam/README.md) | ESP32-CAM door camera + OLED on a TTGO Camera Module |
+| [`lilygo-lora32`](lilygo-lora32/README.md) | LilyGO T3 LoRa32, Sensus iPERL water meter via wM-Bus |
 | [`m5stack-atom-lite-ir`](m5stack-atom-lite-ir/README.md) | ESP32 IR remote for soundbar |
 | [`room_climate`](room_climate/README.md) | room climate using SHT4x boards, ESP Super Mini and one ESP32 |
 | [`temp_senser`](temp_senser/README.md) | ESP8266 underfloor heating + oil heater sensors using multiple DS18B20 sensors |
