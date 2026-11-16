@@ -37,7 +37,7 @@ api:
     key: !secret api_encryption_key
 ota:
   - platform: esphome
-    password: !secret ota_password
+    encryption:  # reuses api encryption key
 
 wifi:
   ssid: !secret wifi_ssid
@@ -46,7 +46,7 @@ wifi:
 external_components:
   - source: github://SzczepanLeon/esphome-components@main
     components: [wmbus_common, wmbus_radio, wmbus_meter]
-    refresh: 0s
+    refresh: 1d
 
 spi:
   clk_pin: GPIO5
