@@ -53,6 +53,13 @@ spi:
   mosi_pin: GPIO27
   miso_pin: GPIO19
 
+# Gruene Board-LED (GPIO25): als Ausgang definiert, damit sie einen festen
+# Pegel hat. ESPHome setzt GPIO-Ausgaenge beim Start auf aus (LOW).
+output:
+  - platform: gpio
+    pin: GPIO25
+    id: board_led
+
 # Zaehler fuer Empfangsstatistik (fuer Display und Home Assistant)
 globals:
   - id: g_frames            # alle empfangenen wM-Bus-Telegramme
@@ -178,4 +185,3 @@ text_sensor:
       name: "IP-Adresse"
     ssid:
       name: "SSID"
-
